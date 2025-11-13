@@ -10,6 +10,12 @@
       "embedding_model": "models/embedding-001",
       "api_key_env": "GEMINI_API_KEY"
     },
+    "gemini25": {
+      "type": "gemini",
+      "model": "gemini-2.5-flash",
+      "embedding_model": "models/embedding-001",
+      "api_key_env": "GEMINI_API_KEY"
+    },
     "phi4": {
       "type": "ollama",
       "model": "phi4",
@@ -37,10 +43,23 @@
         "embed": "http://localhost:11434/api/embeddings"
       }
     },
+    "llama3:8b": {
+      "type": "ollama",
+      "model": "llama3:8b",
+      "embedding_model": "llama3:8b",
+      "url": {
+        "generate": "http://localhost:11434/api/generate",
+        "embed": "http://localhost:11434/api/embeddings"
+      }
+    },
     "nomic": {
-      "type": "huggingface",
-      "model": "nomic-ai/nomic-embed-text-v1",
-      "embedding_dimension": 768
+      "type": "ollama",
+      "model": "nomic-embed-text",
+      "embedding_model": "nomic-embed-text",
+      "url": {
+        "generate": "http://localhost:11434/api/generate",
+        "embed": "http://localhost:11434/api/embeddings"
+      }
     }
   }
 }
