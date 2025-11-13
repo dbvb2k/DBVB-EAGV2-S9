@@ -21,8 +21,8 @@ memory:
     structure: "date"  # Indicates we're using date-based directory structure
   historical_index:
     enabled: true
-    path: "faiss_index/history"
-    max_items: 10
+    path: "history"
+    max_items: 25
     file_extensions: [".json", ".jsonl", ".txt"]
     transcripts:
       enabled: true

@@ -76,6 +76,11 @@ class MemoryManager:
                 base_dir = self.historical_path or self.memory_dir
                 if filename and base_dir:
                     self.transcript_file = os.path.join(base_dir, filename)
+                    if self.transcript_enabled:
+                        log(
+                            "memory",
+                            f"✅ Transcript enabled: will write to {self.transcript_file}",
+                        )
 
         self.load()
         if self.historical_enabled and self.historical_path:
@@ -358,5 +363,9 @@ class MemoryManager:
             with open(self.transcript_file, "a", encoding="utf-8") as f:
                 f.write(json.dumps(transcript_entry, ensure_ascii=False))
                 f.write("\n")
+            log(
+                "memory",
+                f"✅ Successfully persisted transcript to {self.transcript_file} (session: {self.session_id})",
+            )
         except Exception as exc:
             log("memory", f"⚠️ Failed to persist transcript: {exc}")

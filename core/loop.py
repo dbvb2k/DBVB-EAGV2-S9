@@ -91,6 +91,8 @@ class AgentLoop:
                                 success=True,
                                 tags=["sandbox"],
                             )
+                            # Persist transcript before returning
+                            self.context.memory.persist_transcript()
                             return {"status": "done", "result": self.context.final_answer}
                         elif result.startswith("FURTHER_PROCESSING_REQUIRED:"):
                             content = result.split("FURTHER_PROCESSING_REQUIRED:")[1].strip()
@@ -128,6 +130,8 @@ class AgentLoop:
                     )
 
                     if success and "FURTHER_PROCESSING_REQUIRED:" not in result:
+                        # Persist transcript before returning
+                        self.context.memory.persist_transcript()
                         return {"status": "done", "result": self.context.final_answer}
                     else:
                         lifelines_left -= 1
@@ -140,4 +144,6 @@ class AgentLoop:
 
         log("loop", "⚠️ Max steps reached without finding final answer.")
         self.context.final_answer = "FINAL_ANSWER: [Max steps reached]"
+        # Persist transcript before returning
+        self.context.memory.persist_transcript()
         return {"status": "done", "result": self.context.final_answer}

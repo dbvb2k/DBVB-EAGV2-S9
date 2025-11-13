@@ -54,7 +54,16 @@ class AgentContext:
 
         self.user_input = user_input
         self.agent_profile = AgentProfile()
-        self.memory = MemoryManager(session_id=session_id)
+        
+        # Extract memory configuration
+        memory_dir = self.agent_profile.memory_config.get("storage", {}).get("base_dir", "memory")
+        historical_config = self.agent_profile.memory_config.get("historical_index")
+        
+        self.memory = MemoryManager(
+            session_id=session_id,
+            memory_dir=memory_dir,
+            historical_config=historical_config
+        )
         self.session_id = self.memory.session_id
         self.dispatcher = dispatcher  # 🆕 Added formally
         self.mcp_server_descriptions = mcp_server_descriptions  # 🆕 Added formally
