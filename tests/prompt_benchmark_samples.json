@@ -1,0 +1,177 @@
+{
+  "scenarios": [
+    {
+      "name": "search_summary",
+      "allowed_tools": ["search", "summarize"],
+      "schema_regex": "async\\s+def\\s+solve\\s*\\(",
+      "return_prefixes": ["FINAL_ANSWER", "FURTHER_PROCESSING_REQUIRED"],
+      "original": {
+        "runs": [
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Search Usage: input={\"input\": {\"query\": \"AI hardware trends\"}}\"\"\"\n    payload = {\"input\": {\"query\": \"AI hardware trends\"}}\n    result = await mcp.call_tool('search', payload)\n    parsed = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {parsed}\"\n",
+            "success": true,
+            "human_score": 4.6
+          },
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Search Usage: input={\"input\": {\"query\": \"AI hardware trends\"}}\"\"\"\n    payload = {\"input\": {\"query\": \"AI hardware trends\"}}\n    result = await mcp.call_tool('search', payload)\n    parsed = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {parsed}\"\n",
+            "success": true,
+            "human_score": 4.5
+          }
+        ]
+      },
+      "optimized": {
+        "runs": [
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Search Usage: input={\"input\": {\"query\": \"AI hardware trends\"}}\"\"\"\n    input_payload = {\"input\": {\"query\": \"AI hardware trends\"}}\n    result = await mcp.call_tool('search', input_payload)\n    parsed = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {parsed}\"\n",
+            "success": true,
+            "human_score": 4.7
+          },
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Search Usage: input={\"input\": {\"query\": \"AI hardware trends\"}}\"\"\"\n    input_payload = {\"input\": {\"query\": \"AI hardware trends\"}}\n    result = await mcp.call_tool('search', input_payload)\n    parsed = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {parsed}\"\n",
+            "success": true,
+            "human_score": 4.6
+          }
+        ]
+      }
+    },
+    {
+      "name": "numeric_tool",
+      "allowed_tools": ["add_numbers", "multiply_numbers"],
+      "schema_regex": "async\\s+def\\s+solve\\s*\\(",
+      "return_prefixes": ["FINAL_ANSWER", "FURTHER_PROCESSING_REQUIRED"],
+      "original": {
+        "runs": [
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Add Numbers Usage: input={\"input\": {\"a\": 42, \"b\": 58}}\"\"\"\n    payload = {\"input\": {\"a\": 42, \"b\": 58}}\n    result = await mcp.call_tool('add_numbers', payload)\n    total = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {total}\"\n",
+            "success": true,
+            "human_score": 4.4
+          },
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Add Numbers Usage: input={\"input\": {\"a\": 42, \"b\": 58}}\"\"\"\n    payload = {\"input\": {\"a\": 42, \"b\": 58}}\n    result = await mcp.call_tool('add_numbers', payload)\n    total = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {total}\"\n",
+            "success": true,
+            "human_score": 4.5
+          }
+        ]
+      },
+      "optimized": {
+        "runs": [
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Add Numbers Usage: input={\"input\": {\"a\": 42, \"b\": 58}}\"\"\"\n    input_payload = {\"input\": {\"a\": 42, \"b\": 58}}\n    result = await mcp.call_tool('add_numbers', input_payload)\n    total = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {total}\"\n",
+            "success": true,
+            "human_score": 4.6
+          },
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Add Numbers Usage: input={\"input\": {\"a\": 42, \"b\": 58}}\"\"\"\n    input_payload = {\"input\": {\"a\": 42, \"b\": 58}}\n    result = await mcp.call_tool('add_numbers', input_payload)\n    total = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {total}\"\n",
+            "success": true,
+            "human_score": 4.7
+          }
+        ]
+      }
+    },
+    {
+      "name": "document_pipeline",
+      "allowed_tools": ["extract_webpage", "search_docs"],
+      "schema_regex": "async\\s+def\\s+solve\\s*\\(",
+      "return_prefixes": ["FINAL_ANSWER", "FURTHER_PROCESSING_REQUIRED"],
+      "original": {
+        "runs": [
+          {
+            "output": "async def solve():\n    \"\"\"Extract Webpage Usage: input={\"url\": \"https://dlf.com/financials\"}\"\"\"\n    payload = {\"url\": \"https://dlf.com/financials\"}\n    result = await mcp.call_tool('extract_webpage', payload)\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\"\n",
+            "success": true,
+            "human_score": 4.3
+          },
+          {
+            "output": "async def solve():\n    \"\"\"Extract Webpage Usage: input={\"url\": \"https://dlf.com/financials\"}\"\"\"\n    payload = {\"url\": \"https://dlf.com/financials\"}\n    result = await mcp.call_tool('extract_webpage', payload)\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\"\n",
+            "success": true,
+            "human_score": 4.2
+          }
+        ]
+      },
+      "optimized": {
+        "runs": [
+          {
+            "output": "async def solve():\n    \"\"\"Extract Webpage Usage: input={\"url\": \"https://dlf.com/financials\"}\"\"\"\n    input_payload = {\"url\": \"https://dlf.com/financials\"}\n    result = await mcp.call_tool('extract_webpage', input_payload)\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\"\n",
+            "success": true,
+            "human_score": 4.4
+          },
+          {
+            "output": "async def solve():\n    \"\"\"Extract Webpage Usage: input={\"url\": \"https://dlf.com/financials\"}\"\"\"\n    input_payload = {\"url\": \"https://dlf.com/financials\"}\n    result = await mcp.call_tool('extract_webpage', input_payload)\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\"\n",
+            "success": true,
+            "human_score": 4.3
+          }
+        ]
+      }
+    }
+    ,
+    {
+      "name": "web_markdown_conversion",
+      "allowed_tools": ["convert_webpage_url_into_markdown"],
+      "schema_regex": "async\\s+def\\s+solve\\s*\\(",
+      "return_prefixes": ["FINAL_ANSWER", "FURTHER_PROCESSING_REQUIRED"],
+      "original": {
+        "runs": [
+          {
+            "output": "async def solve():\n    \"\"\"Return clean webpage content. Usage: input={\"input\": {\"url\": \"https://example.com\"}}\"\"\"\n    payload = {\"input\": {\"url\": \"https://www.deepmind.com/blog\"}}\n    result = await mcp.call_tool('convert_webpage_url_into_markdown', payload)\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\"\n",
+            "success": true,
+            "human_score": 4.3
+          },
+          {
+            "output": "async def solve():\n    \"\"\"Return clean webpage content. Usage: input={\"input\": {\"url\": \"https://example.com\"}}\"\"\"\n    payload = {\"input\": {\"url\": \"https://www.deepmind.com/blog\"}}\n    result = await mcp.call_tool('convert_webpage_url_into_markdown', payload)\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\"\n",
+            "success": true,
+            "human_score": 4.2
+          }
+        ]
+      },
+      "optimized": {
+        "runs": [
+          {
+            "output": "async def solve():\n    \"\"\"Return clean webpage content. Usage: input={\"input\": {\"url\": \"https://example.com\"}}\"\"\"\n    input_payload = {\"input\": {\"url\": \"https://www.deepmind.com/blog\"}}\n    result = await mcp.call_tool('convert_webpage_url_into_markdown', input_payload)\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\"\n",
+            "success": true,
+            "human_score": 4.4
+          },
+          {
+            "output": "async def solve():\n    \"\"\"Return clean webpage content. Usage: input={\"input\": {\"url\": \"https://example.com\"}}\"\"\"\n    input_payload = {\"input\": {\"url\": \"https://www.deepmind.com/blog\"}}\n    result = await mcp.call_tool('convert_webpage_url_into_markdown', input_payload)\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\"\n",
+            "success": true,
+            "human_score": 4.3
+          }
+        ]
+      }
+    },
+    {
+      "name": "duckduckgo_news_search",
+      "allowed_tools": ["duckduckgo_search_results"],
+      "schema_regex": "async\\s+def\\s+solve\\s*\\(",
+      "return_prefixes": ["FINAL_ANSWER", "FURTHER_PROCESSING_REQUIRED"],
+      "original": {
+        "runs": [
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Search DuckDuckGo. Usage: input={\"input\": {\"query\": \"latest AI developments\", \"max_results\": 5}}\"\"\"\n    payload = {\"input\": {\"query\": \"AI regulation news\", \"max_results\": 3}}\n    result = await mcp.call_tool('duckduckgo_search_results', payload)\n    parsed = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {parsed}\"\n",
+            "success": true,
+            "human_score": 4.5
+          },
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Search DuckDuckGo. Usage: input={\"input\": {\"query\": \"latest AI developments\", \"max_results\": 5}}\"\"\"\n    payload = {\"input\": {\"query\": \"AI regulation news\", \"max_results\": 3}}\n    result = await mcp.call_tool('duckduckgo_search_results', payload)\n    parsed = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {parsed}\"\n",
+            "success": true,
+            "human_score": 4.4
+          }
+        ]
+      },
+      "optimized": {
+        "runs": [
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Search DuckDuckGo. Usage: input={\"input\": {\"query\": \"latest AI developments\", \"max_results\": 5}}\"\"\"\n    input_payload = {\"input\": {\"query\": \"AI regulation news\", \"max_results\": 3}}\n    result = await mcp.call_tool('duckduckgo_search_results', input_payload)\n    parsed = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {parsed}\"\n",
+            "success": true,
+            "human_score": 4.6
+          },
+          {
+            "output": "import json\nasync def solve():\n    \"\"\"Search DuckDuckGo. Usage: input={\"input\": {\"query\": \"latest AI developments\", \"max_results\": 5}}\"\"\"\n    input_payload = {\"input\": {\"query\": \"AI regulation news\", \"max_results\": 3}}\n    result = await mcp.call_tool('duckduckgo_search_results', input_payload)\n    parsed = json.loads(result.content[0].text)[\"result\"]\n    return f\"FINAL_ANSWER: {parsed}\"\n",
+            "success": true,
+            "human_score": 4.5
+          }
+        ]
+      }
+    }
+  ]
+}
+
+

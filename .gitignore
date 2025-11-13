@@ -1,7 +1,7 @@
 # Credentials and secrets
 config.py
 credentials/
-*.json
+session*.json
 *.pickle
 *.pkl
 gmail_token.pickle
