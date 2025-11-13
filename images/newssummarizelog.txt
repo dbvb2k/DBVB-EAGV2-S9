@@ -1,0 +1,105 @@
+(base) D:\MyProjects\AI-ML\EAG_V2-ForGit\Session-9>uv run agent.py
+🧠 Cortex-R Agent Ready
+in MultiMCP initialize
+→ Scanning tools from: mcp_server_1.py in D:\MyProjects\AI-ML\EAG_V2-ForGit\Session-9
+Connection established, creating session...
+[agent] Session created, initializing...
+[agent] MCP session initialized
+→ Tools received: ['add', 'subtract', 'multiply', 'divide', 'power', 'cbrt', 'factorial', 'remainder', 'sin', 'cos', 'tan', 'mine', 'create_thumbnail', 'strings_to_chars_to_int', 'int_list_to_exponential_sum', 'fibonacci_numbers']
+→ Scanning tools from: mcp_server_2.py in D:\MyProjects\AI-ML\EAG_V2-ForGit\Session-9
+Connection established, creating session...
+[agent] Session created, initializing...
+[agent] MCP session initialized
+→ Tools received: ['search_stored_documents', 'convert_webpage_url_into_markdown', 'extract_pdf']
+→ Scanning tools from: mcp_server_3.py in D:\MyProjects\AI-ML\EAG_V2-ForGit\Session-9
+Connection established, creating session...
+[agent] Session created, initializing...
+[agent] MCP session initialized
+→ Tools received: ['duckduckgo_search_results', 'download_raw_html_from_url']
+🧑 What do you want to solve today? → Summarize this news article for me in 100 words https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote
+🔁 Step 1/10 starting...
+Waiting for 3 seconds before generating perception...
+[15:31:20] [perception] Raw output: ```json
+{
+  "intent": "Summarize a news article",
+  "entities": ["news article", "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote", "100 words"],
+  "tool_hint": "Summarization tool",
+  "selected_servers": ["websearch", "documents"]
+}
+```
+result {'intent': 'Summarize a news article', 'entities': ['news article', 'https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote', '100 words'], 'tool_hint': 'Summarization tool', 'selected_servers': ['websearch', 'documents']}
+[perception] intent='Summarize a news article' entities=['news article', 'https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote', '100 words'] tool_hint='Summarization tool' tags=[] selected_servers=['websearch', 'documents']
+Using conservative prompt file:  prompts/decision_prompt_conservative_opt2.txt
+Waiting for 3 seconds before generating decision...
+[15:31:24] [plan] LLM output: ```python
+import json
+async def solve():
+    """Convert Webpage Usage: input={{"input": {{"url": "https://example.com"}}}}"""
+    input_payload = {"input": {"url": "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote"}}
+    result = await mcp.call_tool('convert_webpage_url_into_markdown', input_payload)
+    return f"FURTHER_PROCESSING_REQUIRED: {result}"
+```
+[plan] import json
+async def solve():
+    """Convert Webpage Usage: input={{"input": {{"url": "https://example.com"}}}}"""
+    input_payload = {"input": {"url": "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote"}}
+    result = await mcp.call_tool('convert_webpage_url_into_markdown', input_payload)
+    return f"FURTHER_PROCESSING_REQUIRED: {result}"
+[loop] Detected solve() plan — running sandboxed...
+[action] 🔍 Entered run_python_sandbox()
+[15:31:26] [loop] 📨 Forwarding intermediate result to next step:
+Original user task: Summarize this news article for me in 100 words https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote
+
+Your last tool produced this result:
+
+meta=None content=[TextContent(type='text', text='{"markdown": "President Donald Trump late Wednesday signed a funding package to reopen the federal government, officially bringing a close to the longest shutdown in history.\\n\\nThe final approval came hours after the House voted 222 to 209 to pass a deal struck between Republicans and centrist Senate Democrats that keeps the government running through January and ensures some key agencies will be funded for the remainder of fiscal year 2026.\\n\\nThe agreement, which ended a record 43-day stalemate in Congress, will also reverse the mass federal layoffs carried out by Trump during the shutdown. It paves the way for paychecks to flow to government employees, as well as the resumption of critical food and nutrition services relied on by tens of millions of Americans.\\n\\nTrump on Wednesday night cast the legislation as a victory over Democrats, calling it \\u201ca clear message that we will never give in to extortion, because that\\u2019s what it was, they tried to extort.\\u201d\\n\\n\\u201cThey didn\\u2019t want to do it the easy way,\\u201d he said from the Oval Office, attacking what he called \\u201cthe extremists\\u201d in the Democratic Party. \\u201cThey had to do it the hard way, and they look very bad.\\u201d\\n\\nThe White House signing ceremony was attended by a range of Republican lawmakers and capped a four-day sprint to pass the funding bill, after eight Senate Democrats broke ranks to compromise with Republicans amid worries about the shutdown\\u2019s widening economic consequences.\\n\\nThe deal guarantees an early December vote in the Senate on the expiring Obamacare subsidies that Democrats made the focus of their demands during the shutdown fight. But a vote to extend the subsidies is unlikely to succeed, a likelihood that\\u2019s driven intense blowback across the Democratic Party.\\n\\nMost congressional Democrats loudly protested the bill in the run-up to Wednesday\\u2019s vote over concerns Americans\\u2019 health care premiums will skyrocket without the subsidies, with only six House Democrats voting in favor of the package.\\n\\n\\u201cThis fight is not over. We\\u2019re just getting started,\\u201d top House Democrat Hakeem Jeffries said ahead of the vote. \\u201cTens of millions of Americans are at risk of being unable to afford to go see a doctor when they need it.\\u201d\\n\\nBack in Washington for the first time since mid-September, Speaker Mike Johnson corralled almost all Republicans behind the bill, despite sharp complaints from some of his members over a contentious provision added by Senate Republicans that allowed senators to retroactively sue the Department of Justice for obtaining phone records during a Biden-era probe \\u2013 potentially amounting to a major financial windfall for those lawmakers.\\n\\nJohnson himself said he was blindsided by the language, and he said he didn\\u2019t know about it until the Senate had already passed the package.\\n\\n\\u201cI was shocked by it, I was angry about it,\\u201d the speaker said, though he added that he did not believe Senate Majority Leader John Thune added it in a nefarious manner. \\u201cI think it was a really bad look, and we\\u2019re going to fix it in the House.\\u201d\\n\\nTo win over conservative holdouts, Johnson vowed that the House would take a future vote to strip that language \\u2014 though it\\u2019s unclear if the Senate would take it up. Republicans like Rep. Chip Roy of Texas ultimately agreed not to amend the language in the current stopgap bill, since it would require the Senate to return to Washington to vote again and delay the end of the shutdown.\\n\\nConservatives like Roy had blasted that provision as \\u201cself-dealing,\\u201d since it would award senators $500,000 or more in damages for each violation by the government if their lawsuit is successful. The amendment appeared to benefit eight senators in particular who had been subpoenaed by the previous administration into investigations into Trump\\u2019s first term.\\n\\nRep. Rosa DeLauro, the top Democrat on the House Appropriations panel, accused those eight senators of voting \\u201cto shove taxpayer dollars into their own pockets \\u2013 $500,000 for each time their records were inspected.\\u201d\\n\\nThe House Democrats who voted in favor of the compromise bill to reopen the government were: Reps. Jared Golden, Adam Gray, Marie Gluesenkamp Perez, Henry Cuellar, Tom Suozzi and Don Davis. GOP Reps. Thomas Massie voted and Greg Steube against the bill.\\n\\nThe end of the government shutdown will usher in a frenetic few weeks of work for the House, which has been largely shuttered since late September. As part of the GOP\\u2019s pressure campaign on Democrats, Johnson had decided to keep all members out of Washington until Senate Democrats agreed to back the GOP\\u2019s existing funding plan.\\n\\nNow, Republicans and Democrats have just four weeks in session before the end of the year \\u2014 when those Obamacare tax credits expire. Trump has called for revamping the law rather than extending the existing subsidies, setting up a high-stakes showdown over health care that could carry political ramifications for next year\\u2019s midterm elections.\\n\\n\\u201cObamacare was a disaster,\\u201d Trump said Wednesday night. \\u201cWe\\u2019ll work on something having to do with health care. We can do a lot better.\\u201d\\n\\nBut there are plenty of other deadlines, including Congress\\u2019 farm bill and a slew of expiring energy credits.\\n\\nHouse Republicans are also eager to pass as many spending bills as possible to improve their negotiating stance with the Senate ahead of that next deadline on January 30.\\n\\nJohnson also faces another hot-button issue: the question of how Congress should handle the Jeffrey Epstein files.\\n\\nNot long before the votes to reopen the government got underway, a newly elected Democrat \\u2014 Rep. Adelita Grijalva \\u2014 became the critical 218th signature to force a vote to compel the Justice Department to release all of its case files related to Epstein.\\n\\nJohnson announced to reporters soon after Grijalva signed the petition that he will put a bill compelling the Department of Justice to release all of its Epstein case files on the House floor next week \\u2013 earlier than expected, and after an extraordinary White House pressure campaign earlier Wednesday failed to convince any Republicans to remove their name from the petition.\\n\\nThe effort coincided with intensifying scrutiny over the Epstein files in the House. Earlier Wednesday, House Democrats on the Oversight panel released new emails that showed Epstein had repeatedly mentioned Trump by name in private correspondence, and then the GOP-led committee released 200,000 pages of documents the panel received from Epstein\\u2019s estate.\\n\\n*This headline and story have been updated with additional details. *"}', annotations=None)] isError=False
+
+If this fully answers the task, return:
+FINAL_ANSWER: your answer
+
+Otherwise, return the next FUNCTION_CALL.
+
+
+[15:31:26] [loop] 🔁 Continuing based on FURTHER_PROCESSING_REQUIRED — Step 1 continues...
+🔁 Step 2/10 starting...
+Waiting for 3 seconds before generating perception...
+[15:31:31] [perception] Raw output: ```json
+{
+  "intent": "Summarize a news article.",
+  "entities": [
+    "news article",
+    "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote",
+    "100 words"
+  ],
+  "tool_hint": "Summarization tool",
+  "selected_servers": ["documents"]
+}
+```
+result {'intent': 'Summarize a news article.', 'entities': ['news article', 'https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote', '100 words'], 'tool_hint': 'Summarization tool', 'selected_servers': ['documents']}
+[perception] intent='Summarize a news article.' entities=['news article', 'https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote', '100 words'] tool_hint='Summarization tool' tags=[] selected_servers=['documents']
+Using conservative prompt file:  prompts/decision_prompt_conservative_opt2.txt
+Waiting for 3 seconds before generating decision...
+[15:31:37] [plan] LLM output: ```python
+import json
+async def solve():
+    """Convert webpage to markdown Usage: input={{"input": {{"url": "https://example.com"}}}}"""
+    input_payload = {"input": {"url": "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote"}}
+    result = await mcp.call_tool('convert_webpage_url_into_markdown', input_payload)
+    content = result.content[0].text
+    markdown = json.loads(content)["markdown"]
+    summary = "President Trump signed a funding package to end the longest government shutdown in history. The House voted 222-209 to pass a deal that keeps the government running through January and funds key agencies for the remainder of fiscal year 2026. The agreement reverses mass federal layoffs and resumes paychecks and critical services. Trump hailed it as a victory over Democrats. The deal guarantees a Senate vote on Obamacare subsidies, but its success is unlikely. Speaker Johnson vowed to fix a contentious provision allowing senators to retroactively sue the Department of Justice."
+    return f"FINAL_ANSWER: {summary}"
+```
+[plan] import json
+async def solve():
+    """Convert webpage to markdown Usage: input={{"input": {{"url": "https://example.com"}}}}"""
+    input_payload = {"input": {"url": "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote"}}
+    result = await mcp.call_tool('convert_webpage_url_into_markdown', input_payload)
+    content = result.content[0].text
+    markdown = json.loads(content)["markdown"]
+    summary = "President Trump signed a funding package to end the longest government shutdown in history. The House voted 222-209 to pass a deal that keeps the government running through January and funds key agencies for the remainder of fiscal year 2026. The agreement reverses mass federal layoffs and resumes paychecks and critical services. Trump hailed it as a victory over Democrats. The deal guarantees a Senate vote on Obamacare subsidies, but its success is unlikely. Speaker Johnson vowed to fix a contentious provision allowing senators to retroactively sue the Department of Justice."
+    return f"FINAL_ANSWER: {summary}"
+[loop] Detected solve() plan — running sandboxed...
+[action] 🔍 Entered run_python_sandbox()
+
+💡 Final Answer: President Trump signed a funding package to end the longest government shutdown in history. The House voted 222-209 to pass a deal that keeps the government running through January and funds key agencies for the remainder of fiscal year 2026. The agreement reverses mass federal layoffs and resumes paychecks and critical services. Trump hailed it as a victory over Democrats. The deal guarantees a Senate vote on Obamacare subsidies, but its success is unlikely. Speaker Johnson vowed to fix a contentious provision allowing senators to retroactively sue the Department of Justice.

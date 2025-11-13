@@ -39,6 +39,73 @@ python -m venv .venv
 pip install -r requirements.txt     # if provided
 ```
 
+### Directory Structure
+
+```
+Session-9/
+├── agent.py                    # Main entry point
+├── models.py                   # Pydantic models for MCP tools
+├── pyproject.toml              # Project dependencies (uv)
+├── uv.lock                     # Dependency lock file
+│
+├── config/                     # Configuration files
+│   ├── profiles.yaml          # Agent strategy, memory, MCP server configs
+│   └── models.json            # LLM model mappings (Gemini, Ollama, etc.)
+│
+├── core/                       # Core agent orchestration
+│   ├── context.py             # AgentContext, AgentProfile
+│   ├── loop.py                # Main AgentLoop (perception → planning → execution)
+│   ├── session.py             # MCP client/dispatcher (MultiMCP)
+│   └── strategy.py            # Prompt path selection, decision logic
+│
+├── modules/                    # Agent modules
+│   ├── action.py              # Sandbox execution (run_python_sandbox)
+│   ├── decision.py            # Plan generation (generate_plan)
+│   ├── memory.py              # MemoryManager (session + historical)
+│   ├── model_manager.py       # LLM wrapper (Gemini, Ollama)
+│   ├── perception.py          # Intent extraction (extract_perception)
+│   ├── tools.py               # Tool summarization utilities
+│   └── mcp_server_memory.py   # MCP server for memory queries
+│
+├── prompts/                    # LLM prompt templates
+│   ├── perception_prompt.txt
+│   ├── decision_prompt_conservative.txt
+│   ├── decision_prompt_conservative_opt2.txt
+│   ├── decision_prompt_exploratory_parallel.txt
+│   └── decision_prompt_exploratory_sequential.txt
+│
+├── mcp_server_*.py            # MCP tool servers (math, documents, web)
+│   ├── mcp_server_1.py        # Math tools (add, subtract, fibonacci, etc.)
+│   ├── mcp_server_2.py        # Document tools (search, extract PDF, markdown)
+│   └── mcp_server_3.py        # Web search tools (DuckDuckGo)
+│
+├── memory/                     # Session memory storage (date-based)
+│   └── YYYY/MM/DD/session/    # Individual session JSON files
+│
+├── history/                    # Historical transcripts (if enabled)
+│   └── transcripts.jsonl     # Shared transcript log
+│
+├── faiss_index/               # FAISS vector index for document search
+│   ├── index.bin
+│   ├── metadata.json
+│   └── doc_index_cache.json
+│
+├── documents/                  # Source documents for indexing/search
+│   ├── *.pdf, *.md, *.txt, *.docx
+│   └── images/
+│
+├── heuristics_lib/            # Input/output validation heuristics
+│   ├── heuristics_validators.py
+│   └── test_heuristics.py
+│
+├── tests/                      # Unit tests
+│   ├── test_prompt_performance.py
+│   └── prompt_benchmark_samples.json
+│
+└── images/                     # Documentation assets
+    └── sequence.png            # Architecture sequence diagram
+```
+
 ### Running the Agent
 
 ```bash
@@ -147,6 +214,261 @@ Add `--use-real-llm` to the judge command to route comparisons through Ollama.
 - Prompt parity: `python -m unittest tests.test_prompt_performance`
 - Heuristics: `python -m unittest heuristics_lib.test_heuristics`
 - Manual CLI runs (`uv run agent.py`) are encouraged; logs highlight follow-up heuristics and tool errors.
+
+---
+
+## Application Output Logs
+
+The agent produces detailed console logs showing the perception → planning → execution flow. Below is a sample log snippet from a typical session:
+
+### Log Snippet 1 (Product of six fibonacci numbers starting from 2nd fibonacci number)
+
+```
+🧠 Cortex-R Agent Ready
+🧑 What do you want to solve today? → Find the product of six fibonacci numbers starting from second fibonacci number
+🔁 Step 1/10 starting...
+Waiting for 3 seconds before generating perception...
+[15:41:55] [perception] Raw output: """json
+{
+  "intent": "Calculate the product of six Fibonacci numbers",
+  "entities": ["six", "Fibonacci numbers", "product"],
+  "tool_hint": "python sandbox",
+  "selected_servers": ["math"]
+}
+"""
+result {'intent': 'Calculate the product of six Fibonacci numbers', 'entities': ['six', 'Fibonacci numbers', 'product'], 'tool_hint': 'python sandbox', 'selected_servers': ['math']}
+[perception] intent='Calculate the product of six Fibonacci numbers' entities=['six', 'Fibonacci numbers', 'product'] tool_hint='python sandbox' tags=[] selected_servers=['math']
+Using conservative prompt file:  prompts/decision_prompt_conservative_opt2.txt
+Waiting for 3 seconds before generating decision...
+[15:42:00] [plan] LLM output: ```python
+import json
+async def solve():
+    """fibonacci_numbers: Generate first n Fibonacci numbers. Usage: input={"input": {"n": 10}}"""
+    input_payload = {"input": {"n": 7}}
+    result = await mcp.call_tool('fibonacci_numbers', input_payload)
+    fibonacci_sequence = json.loads(result.content[0].text)["result"]
+
+    product = 1
+    for i in range(1, 7):
+        product *= fibonacci_sequence[i]
+
+    return f"FINAL_ANSWER: {product}"
+
+[plan] import json
+async def solve():
+    """fibonacci_numbers: Generate first n Fibonacci numbers. Usage: input={"input": {"n": 10}}"""
+    input_payload = {"input": {"n": 7}}
+    result = await mcp.call_tool('fibonacci_numbers', input_payload)
+    fibonacci_sequence = json.loads(result.content[0].text)["result"]
+
+    product = 1
+    for i in range(1, 7):
+        product *= fibonacci_sequence[i]
+
+    return f"FINAL_ANSWER: {product}"
+[loop] Detected solve() plan — running sandboxed...
+[action] 🔍 Entered run_python_sandbox()
+
+💡 Final Answer: 240
+
+```
+
+**Full log file**: See [`images\fibonacciquerylog.txt`](images/fibonacciquerylog.txt) for a complete example session log.
+
+### Log Snippet 2 (News Summarization from CNN website)
+
+```
+🧠 Cortex-R Agent Ready
+🧑 What do you want to solve today? → Summarize this news article for me in 100 words https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote
+
+[11:26:04] [memory] ✅ Transcript enabled: will write to history/transcripts.jsonl
+[11:26:04] [memory] Historical index active: loaded 10 item(s) from history
+
+🔁 Step 1/10 starting...
+Waiting for 3 seconds before generating perception...
+[15:31:20] [perception] Raw output: """json
+{
+  "intent": "Summarize a news article",
+  "entities": ["news article", "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote", "100 words"],
+  "tool_hint": "Summarization tool",
+  "selected_servers": ["websearch", "documents"]
+}
+"""
+result {'intent': 'Summarize a news article', 'entities': ['news article', 'https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote', '100 words'], 'tool_hint': 'Summarization tool', 'selected_servers': ['websearch', 'documents']}
+[perception] intent='Summarize a news article' entities=['news article', 'https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote', '100 words'] tool_hint='Summarization tool' tags=[] selected_servers=['websearch', 'documents']
+Using conservative prompt file:  prompts/decision_prompt_conservative_opt2.txt
+Waiting for 3 seconds before generating decision...
+[15:31:24] [plan] LLM output: """python
+import json
+async def solve():
+    """Convert Webpage Usage: input={{"input": {{"url": "https://example.com"}}}}"""
+    input_payload = {"input": {"url": "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote"}}
+    result = await mcp.call_tool('convert_webpage_url_into_markdown', input_payload)
+    return f"FURTHER_PROCESSING_REQUIRED: {result}"
+"""
+[plan] import json
+async def solve():
+    """Convert Webpage Usage: input={{"input": {{"url": "https://example.com"}}}}"""
+    input_payload = {"input": {"url": "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote"}}
+    result = await mcp.call_tool('convert_webpage_url_into_markdown', input_payload)
+    return f"FURTHER_PROCESSING_REQUIRED: {result}"
+[loop] Detected solve() plan — running sandboxed...
+[action] 🔍 Entered run_python_sandbox()
+[15:31:26] [loop] 📨 Forwarding intermediate result to next step:
+
+.
+.
+.
+
+[15:31:26] [loop] 🔁 Continuing based on FURTHER_PROCESSING_REQUIRED — Step 1 continues...
+🔁 Step 2/10 starting...
+Waiting for 3 seconds before generating perception...
+[15:31:31] [perception] Raw output: """json
+{
+  "intent": "Summarize a news article.",
+  "entities": [
+    "news article",
+    "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote",
+    "100 words"
+  ],
+  "tool_hint": "Summarization tool",
+  "selected_servers": ["documents"]
+}
+"""
+result {'intent': 'Summarize a news article.', 'entities': ['news article', 'https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote', '100 words'], 'tool_hint': 'Summarization tool', 'selected_servers': ['documents']}
+[perception] intent='Summarize a news article.' entities=['news article', 'https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote', '100 words'] tool_hint='Summarization tool' tags=[] selected_servers=['documents']
+Using conservative prompt file:  prompts/decision_prompt_conservative_opt2.txt
+Waiting for 3 seconds before generating decision...
+[15:31:37] [plan] LLM output: """python
+import json
+async def solve():
+    """Convert webpage to markdown Usage: input={{"input": {{"url": "https://example.com"}}}}"""
+    input_payload = {"input": {"url": "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote"}}
+    result = await mcp.call_tool('convert_webpage_url_into_markdown', input_payload)
+    content = result.content[0].text
+    markdown = json.loads(content)["markdown"]
+    summary = "President Trump signed a funding package to end the longest government shutdown in history. The House voted 222-209 to pass a deal that keeps the government running through January and funds key agencies for the remainder of fiscal year 2026. The agreement reverses mass federal layoffs and resumes paychecks and critical services. Trump hailed it as a victory over Democrats. The deal guarantees a Senate vote on Obamacare subsidies, but its success is unlikely. Speaker Johnson vowed to fix a contentious provision allowing senators to retroactively sue the Department of Justice."
+    return f"FINAL_ANSWER: {summary}"
+"""
+[plan] import json
+async def solve():
+    """Convert webpage to markdown Usage: input={{"input": {{"url": "https://example.com"}}}}"""
+    input_payload = {"input": {"url": "https://edition.cnn.com/2025/11/12/politics/government-shutdown-funding-bill-house-vote"}}
+    result = await mcp.call_tool('convert_webpage_url_into_markdown', input_payload)
+    content = result.content[0].text
+    markdown = json.loads(content)["markdown"]
+    summary = "President Trump signed a funding package to end the longest government shutdown in history. The House voted 222-209 to pass a deal that keeps the government running through January and funds key agencies for the remainder of fiscal year 2026. The agreement reverses mass federal layoffs and resumes paychecks and critical services. Trump hailed it as a victory over Democrats. The deal guarantees a Senate vote on Obamacare subsidies, but its success is unlikely. Speaker Johnson vowed to fix a contentious provision allowing senators to retroactively sue the Department of Justice."
+    return f"FINAL_ANSWER: {summary}"
+[loop] Detected solve() plan — running sandboxed...
+[action] 🔍 Entered run_python_sandbox()
+
+💡 Final Answer: President Trump signed a funding package to end the longest government shutdown in history. The House voted 222-209 to pass a deal that keeps the government running through January and funds key agencies for the remainder of fiscal year 2026. The agreement reverses mass federal layoffs and resumes paychecks and critical services. Trump hailed it as a victory over Democrats. The deal guarantees a Senate vote on Obamacare subsidies, but its success is unlikely. Speaker Johnson vowed to fix a contentious provision allowing senators to retroactively sue the Department of Justice.
+
+```
+
+**Full log file**: See [`images/newssummarizelog.txt`](images/newssummarizelog.txt) for a complete example session log.
+
+### Log Snippet 3 (Query on Tesla based on the uploaded documents)
+
+```
+🧠 Cortex-R Agent Ready
+🧑 What do you want to solve today? → What are Elon Musk's diverse array of interests with respect to Tesla? Use local documents and summarize.
+
+🔁 Step 1/10 starting...
+Waiting for 3 seconds before generating perception...
+[15:25:03] [perception] Raw output: """json
+{
+  "intent": "Summarize Elon Musk's interests related to Tesla using local documents.",
+  "entities": ["Elon Musk", "Tesla", "interests", "local documents"],
+  "tool_hint": "document summarization",
+  "selected_servers": ["documents"]
+}
+"""
+result {'intent': "Summarize Elon Musk's interests related to Tesla using local documents.", 'entities': ['Elon Musk', 'Tesla', 'interests', 'local documents'], 'tool_hint': 'document summarization', 'selected_servers': ['documents']}
+[perception] intent="Summarize Elon Musk's interests related to Tesla using local documents." entities=['Elon Musk', 'Tesla', 'interests', 'local documents'] tool_hint='document summarization' tags=[] selected_servers=['documents']
+Using conservative prompt file:  prompts/decision_prompt_conservative_opt2.txt
+Waiting for 3 seconds before generating decision...
+[15:25:09] [plan] LLM output: """python
+import json
+async def solve():
+    """Search documents to get relevant extracts. Usage: input={"input": {"query": "your query"}} result = await mcp.call_tool('search_stored_documents', input)"""
+    input_payload = {"input": {"query": "Elon Musk's interests related to Tesla"}}
+    result = await mcp.call_tool('search_stored_documents', input_payload)
+    return f"FURTHER_PROCESSING_REQUIRED: {result}"
+"""
+[plan] import json
+async def solve():
+    """Search documents to get relevant extracts. Usage: input={"input": {"query": "your query"}} result = await mcp.call_tool('search_stored_documents', input)"""
+    input_payload = {"input": {"query": "Elon Musk's interests related to Tesla"}}
+    result = await mcp.call_tool('search_stored_documents', input_payload)
+    return f"FURTHER_PROCESSING_REQUIRED: {result}"
+[loop] Detected solve() plan — running sandboxed...
+[action] 🔍 Entered run_python_sandbox()
+[15:25:13] [loop] 📨 Forwarding intermediate result to next step:
+Original user task: What are Elon Musk's diverse array of interests with respect to Tesla? Use local documents and summarize.
+
+Your last tool produced this result:
+
+meta=None content=[TextContent(type='text', text='## **AUGUST 2014 ** # **TESLA MOTORS: ** **INTELLECTUAL PROPERTY, OPEN INNOVATION, ** **AND THE CARBON CRISIS ** **Image:** A red Tesla Roadster convertible drives along a paved road with a driver visible. The car is positioned slightly angled, showcasing its sleek design. In the background, a vast landscape of wind turbines stretches across a desert environment under a clear blue sky. ## **DR MATTHEW RIMMER** AUSTRALIAN RESEARCH COUNCIL FUTURE FELLOW ASSOCIATE PROFESSOR THE AUSTRALIAN NATIONAL UNIVERSITY COLLEGE OF LAW The Australian National University College of Law, Canberra, ACT, 0200 Work Telephone Number: (02) 61254164 E-Mail Address: drmatthewrimmer@gmail.com 1 ----- ## **Introduction ** Tesla Motors is an innovative United States manufacturer of electric vehicles. In its annual report for 2012, the company summarizes its business operations: We design, develop, manufacture and sell high-performance fully electric vehicles and advanced electric vehicle powertrain components. We own our sales and service network and have operationally structured our business in a manner that we believe will enable us to rapidly develop and launch advanced electric vehicles and technologies. We believe our vehicles, electric vehicle engineering expertise, and operational structure differentiates us from incumbent automobile manufacturers. We are the first company to commercially produce a federally-compliant electric vehicle, the Tesla Roadster, which achieves a market-leading range on a single charge combined with attractive design, driving performance and zero tailpipe emissions. As of December 31, 2012, we had delivered approximately 2,450 Tesla Roadsters to customers in over 30 countries. While we have concluded the production run of the Tesla Roadster, its proprietary electric vehicle powertrain system is the foundation of our business. We modified this system for our Model S sedan and plan to continue to enhance it for use in our future 
+
+.
+.
+.
+
+result {'intent': "Summarize Elon Musk's interests related to Tesla using local documents.", 'entities': ['Elon Musk', 'Tesla', 'interests', 'local documents'], 'tool_hint': 'The document content seems relevant, potentially needs further summarization.', 'selected_servers': ['documents']}
+[perception] intent="Summarize Elon Musk's interests related to Tesla using local documents." entities=['Elon Musk', 'Tesla', 'interests', 'local documents'] tool_hint='The document content seems relevant, potentially needs further summarization.' tags=[] selected_servers=['documents']
+Using conservative prompt file:  prompts/decision_prompt_conservative_opt2.txt
+Waiting for 3 seconds before generating decision...
+[15:27:21] [plan] LLM output: """python
+import json
+async def solve():
+    """search_stored_documents: Search documents to get relevant extracts. Usage: input={"input": {"query": "your query"}} result = await mcp.call_tool('search_stored_documents', input)
+- convert_webpage_url_into_markdown: Return clean webpage content without Ads, and clutter. Usage: input={{"input": {{"url": "https://example.com"}}}} result = await mcp.call_tool('convert_webpage_url_into_markdown', input)
+- extract_pdf: Convert PDF to markdown. Usage: input={"input": {"file_path": "documents/sample.pdf"} } result = await mcp.call_tool('extract_pdf', input)"""
+    query = "Elon Musk's interests with respect to Tesla"
+    input_payload = {"input": {"query": query}}
+    result = await mcp.call_tool('search_stored_documents', input_payload)
+
+    # Extracting information from the provided document excerpts.
+    interests = [
+        "product development and design (Tesla Roadster, Model S, Model X)",
+        "impact of disruptive technologies upon established business models",
+        "sustainable energy economy and electric vehicles",
+        "clean technologies to address climate change",
+        "spacecraft development (SpaceX)",
+        "solar power systems (SolarCity)",
+    ]
+    summary = f"Elon Musk's interests related to Tesla are diverse and include: {', '.join(interests)}."
+    return f"FINAL_ANSWER: {summary}"
+"""
+[plan] import json
+async def solve():
+    """search_stored_documents: Search documents to get relevant extracts. Usage: input={"input": {"query": "your query"}} result = await mcp.call_tool('search_stored_documents', input)
+- convert_webpage_url_into_markdown: Return clean webpage content without Ads, and clutter. Usage: input={{"input": {{"url": "https://example.com"}}}} result = await mcp.call_tool('convert_webpage_url_into_markdown', input)
+- extract_pdf: Convert PDF to markdown. Usage: input={"input": {"file_path": "documents/sample.pdf"} } result = await mcp.call_tool('extract_pdf', input)"""
+    query = "Elon Musk's interests with respect to Tesla"
+    input_payload = {"input": {"query": query}}
+    result = await mcp.call_tool('search_stored_documents', input_payload)
+
+    # Extracting information from the provided document excerpts.
+    interests = [
+        "product development and design (Tesla Roadster, Model S, Model X)",
+        "impact of disruptive technologies upon established business models",
+        "sustainable energy economy and electric vehicles",
+        "clean technologies to address climate change",
+        "spacecraft development (SpaceX)",
+        "solar power systems (SolarCity)",
+    ]
+    summary = f"Elon Musk's interests related to Tesla are diverse and include: {', '.join(interests)}."
+    return f"FINAL_ANSWER: {summary}"
+[loop] Detected solve() plan — running sandboxed...
+[action] 🔍 Entered run_python_sandbox()
+
+💡 Final Answer: Elon Musk's interests related to Tesla are diverse and include: product development and design (Tesla Roadster, Model S, Model X), impact of disruptive technologies upon established business models, sustainable energy economy and electric vehicles, clean technologies to address climate change, spacecraft development (SpaceX), solar power systems (SolarCity).
+
+```
+
+**Full log file**: See [`images\teslaquerylog.txt`](images\teslaquerylog.txt) for a complete example session log.
 
 ---
 
