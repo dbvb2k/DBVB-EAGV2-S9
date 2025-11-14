@@ -194,9 +194,24 @@ Add `--use-real-llm` to the judge command to route comparisons through Ollama.
 
 ## Architecture & Design
 
+### Class Diagram
+<a href="images/classdiag.png" target="_blank">
+  <img src="images/classdiag.png" alt="Class diagram" width="60%" />
+</a>
+
+> 🔍 **Tip:** Click the diagram to open the full-scale version.
+
+Important Classes
+
+
+
 ### Runtime Sequence
 
-![Sequence diagram flow](images/sequence.png)
+<a href="images/sequencediag.png" target="_blank">
+  <img src="images/sequencediag.png" alt="Sequence diagram flow" width="60%" />
+</a>
+
+> 🔍 **Tip:** Click the diagram to open the full-scale version.
 
 ### Key Modules
 
