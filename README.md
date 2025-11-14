@@ -376,7 +376,7 @@ async def solve():
 
 ```
 
-**Full log file**: Click [`fibonacciquerylog.txt`](images/fibonacciquerylog.txt) for a complete example session log.
+**Full log file**: Click [`fibonacciquerylog.txt`](images/fibonacciquerylog.txt) for a complete session log.
 
 ### Log Snippet 2 (News Summarization from CNN website)
 
@@ -468,7 +468,7 @@ async def solve():
 💡 Final Answer: President Trump signed a funding package to end the longest government shutdown in history. The House voted 222-209 to pass a deal that keeps the government running through January and funds key agencies for the remainder of fiscal year 2026. The agreement reverses mass federal layoffs and resumes paychecks and critical services. Trump hailed it as a victory over Democrats. The deal guarantees a Senate vote on Obamacare subsidies, but its success is unlikely. Speaker Johnson vowed to fix a contentious provision allowing senators to retroactively sue the Department of Justice.
 ```
 
-**Full log file**: Click [`newssummarizelog.txt`](images/newssummarizelog.txt) for a complete example session log.
+**Full log file**: Click [`newssummarizelog.txt`](images/newssummarizelog.txt) for a complete session log.
 
 ### Log Snippet 3 (Query on Tesla based on the uploaded documents)
 
@@ -569,7 +569,7 @@ async def solve():
 💡 Final Answer: Elon Musk's interests related to Tesla are diverse and include: product development and design (Tesla Roadster, Model S, Model X), impact of disruptive technologies upon established business models, sustainable energy economy and electric vehicles, clean technologies to address climate change, spacecraft development (SpaceX), solar power systems (SolarCity).
 ```
 
-**Full log file**: Click [`teslaquerylog.txt`](images/teslaquerylog.txt) for a complete example session log.
+**Full log file**: Click [`teslaquerylog.txt`](images/teslaquerylog.txt) for a complete session log.
 
 ---
 
