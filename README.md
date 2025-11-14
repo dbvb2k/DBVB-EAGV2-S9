@@ -569,7 +569,7 @@ async def solve():
 💡 Final Answer: Elon Musk's interests related to Tesla are diverse and include: product development and design (Tesla Roadster, Model S, Model X), impact of disruptive technologies upon established business models, sustainable energy economy and electric vehicles, clean technologies to address climate change, spacecraft development (SpaceX), solar power systems (SolarCity).
 ```
 
-**Full log file**: Click [`teslaquerylog.txt`](images\teslaquerylog.txt) for a complete example session log.
+**Full log file**: Click [`teslaquerylog.txt`](images/teslaquerylog.txt) for a complete example session log.
 
 ---
 
